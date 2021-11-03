@@ -3,6 +3,7 @@
     package="com.example.arwebinar">
 
     <uses-permission android:name="android.permission.CAMERA"/>
+    <!--Interned needed to load the Tiger model-->
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application

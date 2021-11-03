@@ -37,8 +37,11 @@ public class MainActivity extends AppCompatActivity implements
         BaseArFragment.OnSessionConfigurationListener,
         ArFragment.OnViewCreatedListener {
 
+    //Fragment to display AR model in the environment
     private ArFragment arFragment;
+    //Model to be rendered
     private Renderable model;
+    //The view to be rendered
     private ViewRenderable viewRenderable;
 
     @Override
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements
         loadModels();
     }
 
+    //Initiate the listeners
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.ar_fragment) {
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    //Should depth be supported, activates it
+    //Should depth be supported, activates it. Occlusion is a possible use.
     @Override
     public void onSessionConfiguration(Session session, Config config) {
         if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
@@ -84,8 +88,11 @@ public class MainActivity extends AppCompatActivity implements
         arSceneView.setFrameRateFactor(SceneView.FrameRate.FULL);
     }
 
+
     @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+        //Should the model not be loaded, check internet connection, since it is
+        // needed to fetch the model
         if (model == null || viewRenderable == null) {
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
             return;
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements
                 .animate(true).start();
         model.select();
 
+        //Defined view and position for model placement
         Node titleNode = new Node();
         titleNode.setParent(model);
         titleNode.setEnabled(false);
@@ -112,8 +120,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void loadModels() {
+        //A weak reference will clean the activity faster after closing
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
 
+        //Fetch the model from the disered source and set it in the MainActivity
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
                 .setIsFilamentGltf(true)
@@ -131,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements
                     return null;
                 });
 
+        //Loads the model title layout and renders the model in the view
         ViewRenderable.builder()
                 .setView(this, R.layout.view_model_title)
                 .build()
